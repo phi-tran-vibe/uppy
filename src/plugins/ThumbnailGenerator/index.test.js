@@ -329,5 +329,38 @@ describe('uploader/ThumbnailGeneratorPlugin', () => {
         getContext: canvas.getContext
       })
     })
+
+    it('should upsize if original image is smaller than target size', () => {
+      const core = {}
+      const plugin = new ThumbnailGeneratorPlugin(core)
+      const image = {
+        width: 1000,
+        height: 800
+      }
+      plugin.downScaleInSteps = jest.fn().mockReturnValue({
+        image: {
+          height: 1600,
+          width: 2000
+        },
+        sourceWidth: 2000,
+        sourceHeight: 1600
+      })
+      const context = {
+        drawImage: jest.fn()
+      }
+      const canvas = {
+        width: 0,
+        height: 0,
+        getContext: jest.fn().mockReturnValue(context)
+      }
+      document.createElement = jest.fn().mockReturnValue(canvas)
+
+      const result = plugin.resizeImage(image, 2000, 1600)
+      expect(result).toEqual({
+        width: 2000,
+        height: 1600,
+        getContext: canvas.getContext
+      })
+    })
   })
 })
